@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mini To Do List</title>
+    <style>
+        .selesai { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+    <h1>mini To Do List</h1>
+    <input type="text" id="inputTugas" placeholder="Ketik tugas baru di sini... ">
+    <button id="tombolTambah">Tambah</button>
+    <ul id="daftarTugas"></ul>
+
+<script>
+        const tombolTambah = document.getElementById('tombolTambah');
+        function addTask() {
+            const taskInput = document.getElementById('inputTugas');
+            const taskText = taskInput.value.trim();
+            if (taskText === '') return;
+
+            const taskList = document.getElementById('daftarTugas');
+            const listItem = document.createElement('li');
+            listItem.textContent = taskText;
+            listItem.onclick = function() {
+                this.classList.toggle('selesai');
+                simpanData();
+            };
+            taskList.appendChild(listItem);
+            taskInput.value = '';
+            simpanData();
+            }
+        tombolTambah.addEventListener('click', addTask);
+
+        function muatData() {
+            const taskList = document.getElementById('daftarTugas');
+            const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            savedTasks.forEach(task => {
+                const listItem = document.createElement('li');
+                listItem.textContent = task.text;
+                if (task.completed) {
+                    listItem.classList.add('selesai');
+                }
+                listItem.onclick = function() {
+                    this.classList.toggle('selesai');
+                    simpanData();
+                };
+                taskList.appendChild(listItem);
+            });
+        }
+
+        function simpanData() {
+            const taskList = document.getElementById('daftarTugas');
+            const tasks = [];
+            taskList.querySelectorAll('li').forEach(item => {
+                tasks.push({ text: item.textContent, completed: item.classList.contains('selesai') });
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        const tombolHapus = document.createElement('button');
+        tombolHapus.textContent = '❌';
+        tombolHapus.onclick = function() {
+            const taskList = document.getElementById('daftarTugas');
+            taskList.innerHTML = '';
+            localStorage.removeItem('tasks');
+        };
+        document.body.appendChild(tombolHapus);
+        
+        document.addEventListener('DOMContentLoaded', muatData);
+</script>
+</body>
+</html>
